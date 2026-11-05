@@ -1,0 +1,45 @@
+---
+import { hasWhatsApp } from '../data/site';
+interface Props {
+  label?: string;
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  primary: { label: string; href: string };
+  secondary?: { label: string; href: string } | 'whatsapp';
+  waMessage?: string;
+}
+const { label, title, description, image, imageAlt = '', primary } = Astro.props;
+import WhatsAppCTA from './WhatsAppCTA.astro';
+const { secondary, waMessage } = Astro.props;
+---
+<section class="hero">
+  <div class="hero__bg" aria-hidden={imageAlt ? undefined : 'true'}>
+    {image ? (
+      <img src={image} alt={imageAlt} width="1920" height="1080" fetchpriority="high" decoding="async" />
+    ) : (
+      <svg viewBox="0 0 1440 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="1440" height="640" fill="#173c2a" />
+        <path d="M0 640V420L220 300l240 130 280-190 260 150 220-110 220 100v170Z" fill="#1f5138" />
+        <path d="M0 640V520l260-80 300 90 300-70 280 70 300-60v190Z" fill="#2d6a4f" />
+        <path d="M0 640V580l320-50 340 40 360-45 420 45v70Z" fill="#40916c" opacity=".55" />
+      </svg>
+    )}
+  </div>
+  <div class="container hero__inner">
+    <div class="hero__content">
+      {label && <span class="hero__label">{label}</span>}
+      <h1>{title}</h1>
+      <p class="hero__desc">{description}</p>
+      <div class="btn-row btn-row--stack">
+        <a class="btn btn--primary btn--lg" href={primary.href} style="background:#fff;color:var(--color-forest-900)">{primary.label}</a>
+        {secondary === 'whatsapp' ? (
+          <WhatsAppCTA variant="ghost-light" size="lg" label="Konsultasi Kegiatan" message={waMessage ?? 'Halo, saya ingin berkonsultasi tentang kegiatan outbound.'} />
+        ) : secondary ? (
+          <a class="btn btn--ghost-light btn--lg" href={secondary.href}>{secondary.label}</a>
+        ) : null}
+      </div>
+    </div>
+  </div>
+</section>

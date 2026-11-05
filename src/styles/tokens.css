@@ -1,0 +1,43 @@
+:root {
+  --color-forest-950: #102a1c;
+  --color-forest-900: #173c2a;
+  --color-forest-800: #1f5138;
+  --color-forest-700: #2d6a4f;
+  --color-leaf-600: #40916c;
+  --color-leaf-300: #95d5b2;
+  --color-lime-100: #e9f5db;
+  --color-cream-50: #f8faf5;
+  --color-sand-100: #f0f2e9;
+  --color-white: #ffffff;
+  --color-text: #18241d;
+  --color-muted: #66736a;
+  --color-border: #dce5dd;
+  --color-danger: #b42318;
+  --color-success: #237a47;
+
+  --font-heading: 'Manrope Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --container: 1200px;
+  --article: 740px;
+  --gutter: 20px;
+  --section-y: 64px;
+  --nav-h: 68px;
+
+  --radius-card: 18px;
+  --radius-img: 20px;
+  --radius-btn: 999px;
+
+  --shadow-card: 0 1px 2px rgb(16 42 28 / 0.05);
+  --shadow-hover: 0 10px 28px -10px rgb(16 42 28 / 0.25);
+  --shadow-float: 0 16px 40px -12px rgb(16 42 28 / 0.35);
+
+  --ease: 200ms ease;
+}
+
+@media (min-width: 768px) {
+  :root { --gutter: 32px; --section-y: 88px; --nav-h: 76px; }
+}
+@media (min-width: 1024px) {
+  :root { --gutter: 40px; --section-y: 104px; --nav-h: 80px; }
+}

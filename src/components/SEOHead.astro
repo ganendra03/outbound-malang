@@ -1,0 +1,29 @@
+---
+import { site } from '../data/site';
+interface SEOProps {
+  title: string;
+  description: string;
+  canonicalURL: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+const { title, description, canonicalURL, ogImage = site.ogImage, ogType = 'website', noindex = false } = Astro.props as SEOProps;
+const ogUrl = new URL(ogImage, Astro.site).href;
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#1F5138" />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content="id_ID" />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogUrl} />
+<meta name="twitter:card" content="summary_large_image" />

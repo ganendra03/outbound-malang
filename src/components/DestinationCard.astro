@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+interface Props { entry: CollectionEntry<'wisata'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const place = [d.location.locality, d.location.region].filter(Boolean).join(', ') || d.area;
+---
+<article class="card" data-filter-item data-category={d.area}>
+  <Media src={d.cover} alt={d.alt ?? d.title} ratio="4-3" card />
+  <div class="card__body">
+    <p class="card__meta" style="margin:0"><span style="display:inline-flex;gap:6px;align-items:center"><Icon name="pin" class="" />{place}</span></p>
+    <h3 class="card__title"><a href={`/wisata/${entry.id}/`}>{d.title}</a></h3>
+    <p class="card__text">{d.description}</p>
+    {d.activities.length > 0 && (
+      <ul class="tags">{d.activities.slice(0, 3).map((a) => <li>{a}</li>)}</ul>
+    )}
+    <div class="card__foot"><span class="card__more" aria-hidden="true">Jelajahi Wisata</span></div>
+  </div>
+</article>

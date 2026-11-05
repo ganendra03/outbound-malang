@@ -1,0 +1,121 @@
+---
+import { getCollection, render } from 'astro:content';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Media from '../../components/Media.astro';
+import FAQList from '../../components/FAQList.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import DestinationCard from '../../components/DestinationCard.astro';
+import { site } from '../../data/site';
+import { formatDate, formatRupiah } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const items = await getCollection('paket', ({ data }) => data.published);
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const allWisata = await getCollection('wisata', ({ data }) => data.published);
+const relatedWisata = allWisata.filter((w) => d.relatedWisata.includes(w.id));
+const others = (await getCollection('paket', ({ data }) => data.published)).filter((p) => p.id !== entry.id).slice(0, 2);
+const msg = `Halo, saya ingin bertanya tentang ${d.title}.`;
+const area = site.serviceArea ? ` di ${site.serviceArea}` : '';
+const price = d.priceFrom ? `Mulai ${formatRupiah(d.priceFrom)} ${d.priceUnit}` : 'Hubungi kami untuk penawaran';
+---
+<MarketingLayout title={`${d.title}${area} — ${site.name}`} description={d.description} ogImage={d.cover} waMessage={msg}>
+  <PageHeader
+    title={d.title}
+    lead={d.description}
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Paket', href: '/paket/' }, { label: d.title }]}
+    eyebrow={d.category}
+    image={d.cover}
+  />
+  <div class="container">
+    <div class="detail" style="padding-top:36px">
+      <div>
+
+        {d.suitableFor.length > 0 && (
+          <section class="content-block">
+            <h2>Cocok untuk siapa?</h2>
+            <ul class="checklist">{d.suitableFor.map((s) => <li>{s}</li>)}</ul>
+          </section>
+        )}
+
+        <section class="content-block prose"><Content /></section>
+
+        {d.activities.length > 0 && (
+          <section class="content-block">
+            <h2>Aktivitas dalam paket</h2>
+            <ul class="checklist">{d.activities.map((s) => <li>{s}</li>)}</ul>
+          </section>
+        )}
+
+        <section class="content-block">
+          <h2>Fasilitas</h2>
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))">
+            <div>
+              <h3 style="font-size:18px">Termasuk</h3>
+              {d.facilities.length ? <ul class="checklist">{d.facilities.map((s) => <li>{s}</li>)}</ul> : <p class="muted">Rincian fasilitas dikonfirmasi saat penawaran.</p>}
+            </div>
+            {d.notIncluded.length > 0 && (
+              <div>
+                <h3 style="font-size:18px">Tidak termasuk</h3>
+                <ul class="checklist checklist--no">{d.notIncluded.map((s) => <li>{s}</li>)}</ul>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section class="content-block">
+          <h2>Berapa harga paket ini?</h2>
+          <p>{d.priceFrom ? `Harga mulai ${formatRupiah(d.priceFrom)} ${d.priceUnit}. ` : 'Harga paket disampaikan melalui penawaran. '}Besarannya dipengaruhi jumlah peserta, pilihan aktivitas, lokasi, dan tanggal pelaksanaan.</p>
+        </section>
+
+        {d.notes.length > 0 && (
+          <section class="content-block">
+            <h2>Catatan penting</h2>
+            <div class="notice"><ul style="margin:0;padding-left:1.2em">{d.notes.map((n) => <li>{n}</li>)}</ul></div>
+          </section>
+        )}
+
+        {d.faqs.length > 0 && (
+          <section class="content-block">
+            <h2>Pertanyaan tentang paket ini</h2>
+            <FAQList items={d.faqs} idPrefix="paket-faq" />
+          </section>
+        )}
+
+        {d.updatedDate && <p class="muted" style="font-size:14px">Informasi diperbarui <time datetime={d.updatedDate.toISOString()}>{formatDate(d.updatedDate)}</time>.</p>}
+      </div>
+
+      <aside class="summary" aria-labelledby="ringkasan">
+        <h2 id="ringkasan">Ringkasan paket</h2>
+        <dl>
+          <div><dt>Durasi</dt><dd>{d.duration}</dd></div>
+          <div><dt>Peserta</dt><dd>{d.participantRange}</dd></div>
+          {d.location && <div><dt>Lokasi</dt><dd>{d.location}</dd></div>}
+          <div><dt>Harga</dt><dd>{price}</dd></div>
+        </dl>
+        <WhatsAppCTA message={msg} label="Tanya Paket Ini" size="lg" />
+        <p class="summary__note">Pesan terisi nama paket. Ini belum berarti pemesanan terkonfirmasi.</p>
+      </aside>
+    </div>
+
+    {(relatedWisata.length > 0 || others.length > 0) && (
+      <section class="section--tight" style="padding-top:0">
+        {relatedWisata.length > 0 && (<>
+          <h2>Lokasi kegiatan terkait</h2>
+          <div class="grid grid--cards" style="margin-bottom:48px">{relatedWisata.map((e) => <DestinationCard entry={e} />)}</div>
+        </>)}
+        {others.length > 0 && (<>
+          <h2>Paket lainnya</h2>
+          <div class="grid grid--cards">{others.map((e) => <PackageCard entry={e} />)}</div>
+        </>)}
+      </section>
+    )}
+  </div>
+</MarketingLayout>

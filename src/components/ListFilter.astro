@@ -1,0 +1,24 @@
+---
+interface Props { categories: string[]; label?: string }
+const { categories, label = 'Filter kategori' } = Astro.props;
+---
+{categories.length > 1 && (
+  <div class="chips" role="group" aria-label={label} data-filter-chips>
+    <button class="chip" type="button" data-value="" aria-pressed="true">Semua</button>
+    {categories.map((c) => <button class="chip" type="button" data-value={c} aria-pressed="false">{c}</button>)}
+  </div>
+)}
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filter-chips]').forEach((chips) => {
+    const scope = chips.parentElement!;
+    chips.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+      if (!btn) return;
+      chips.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
+      const v = btn.dataset.value ?? '';
+      scope.querySelectorAll<HTMLElement>('[data-filter-item]').forEach((el) => {
+        el.hidden = v !== '' && el.dataset.category !== v;
+      });
+    });
+  });
+</script>

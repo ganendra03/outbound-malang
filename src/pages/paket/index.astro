@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import ListFilter from '../../components/ListFilter.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import { site } from '../../data/site';
+const items = (await getCollection('paket', ({ data }) => data.published)).sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title, 'id'));
+const categories = [...new Set(items.map((i) => i.data.category))];
+const area = site.serviceArea ? ` ${site.serviceArea}` : '';
+---
+<MarketingLayout title={`Paket Outbound${area} — Pilihan Kegiatan dan Gathering`} description={`Daftar paket outbound, team building, dan gathering dari ${site.name}. Bandingkan durasi, peserta, dan fasilitas, lalu minta penawaran.`}>
+  <PageHeader
+    title="Paket outbound dan gathering"
+    lead="Bandingkan paket berdasarkan tujuan, durasi, dan jumlah peserta. Detail fasilitas dan harga dijelaskan di tiap paket."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Paket' }]}
+    image="/images/hero/hero-paket.webp"
+    imageAlt="Aktivitas seru kegiatan outbound dan team building di alam terbuka Batu Malang"
+  />
+  <section class="section">
+    <div class="container">
+      {items.length ? (
+        <div>
+          {items.length >= 4 && <ListFilter {categories} label="Filter kategori paket" />}
+          <div class="grid grid--cards">{items.map((e) => <PackageCard entry={e} />)}</div>
+        </div>
+      ) : (
+        <div class="empty"><h3>Paket belum tersedia</h3><p>Daftar paket sedang disiapkan.</p><WhatsAppCTA message="Halo, saya ingin bertanya tentang paket outbound." /></div>
+      )}
+      <div class="notice" style="margin-top:48px">
+        <p><strong>Belum menemukan yang cocok?</strong> Paket dapat disesuaikan dengan tujuan dan jumlah peserta. Ceritakan kebutuhan acara Anda.</p>
+        <WhatsAppCTA variant="primary" size="sm" message="Halo, saya ingin konsultasi untuk menyesuaikan paket outbound." />
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

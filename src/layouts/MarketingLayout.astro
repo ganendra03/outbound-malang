@@ -1,0 +1,22 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: object[];
+  waMessage?: string;
+}
+const { waMessage, ...seo } = Astro.props;
+---
+<BaseLayout {...seo}>
+  <Navbar />
+  <main id="konten" tabindex="-1"><slot /></main>
+  <Footer />
+  <WhatsAppCTA class="wa-float" size="md" label="WhatsApp" message={waMessage ?? 'Halo, saya ingin bertanya tentang kegiatan outbound.'} />
+</BaseLayout>

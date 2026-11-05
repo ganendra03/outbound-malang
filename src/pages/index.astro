@@ -1,0 +1,206 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import PackageCard from '../components/PackageCard.astro';
+import DestinationCard from '../components/DestinationCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import FAQList from '../components/FAQList.astro';
+import Icon from '../components/Icon.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import { site } from '../data/site';
+import { gallery } from '../data/gallery';
+import { testimonials } from '../data/testimonials';
+import { sortByDateDesc } from '../lib/utils';
+
+const paket = (await getCollection('paket', ({ data }) => data.published)).sort((a, b) => Number(b.data.featured) - Number(a.data.featured)).slice(0, 3);
+const wisata = (await getCollection('wisata', ({ data }) => data.published)).sort((a, b) => Number(b.data.featured) - Number(a.data.featured)).slice(0, 3);
+const blog = sortByDateDesc(await getCollection('blog', ({ data }) => data.published)).slice(0, 3);
+
+const heroDesc = `Temukan pilihan kegiatan outbound, team building, dan gathering yang dapat disesuaikan dengan tujuan acara serta kebutuhan peserta${site.serviceArea ? ` di ${site.serviceArea}` : ''}.`;
+
+const faqs = [
+  { q: 'Apa perbedaan outbound, team building, dan gathering?', a: 'Outbound adalah kegiatan luar ruang yang memakai aktivitas fisik dan permainan sebagai medium belajar. Team building adalah kegiatan yang tujuannya melatih kerja sama dan komunikasi tim, sering memakai format outbound. Gathering adalah acara berkumpul untuk mempererat hubungan, biasanya lebih santai dan tidak selalu berisi permainan terstruktur.' },
+  { q: 'Bagaimana cara meminta penawaran paket?', a: 'Pilih paket yang diminati lalu tekan tombol konsultasi. Sampaikan tujuan acara, perkiraan jumlah peserta, dan tanggal yang diinginkan agar tim dapat menyesuaikan penawaran.' },
+  { q: 'Apakah harga paket sudah pasti?', a: 'Harga bergantung pada jumlah peserta, pilihan aktivitas, lokasi, dan tanggal pelaksanaan. Karena itu informasi harga disampaikan melalui penawaran setelah kebutuhan acara dikonfirmasi.' },
+];
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: site.name,
+  url: Astro.site!.href,
+  logo: new URL(site.logo, Astro.site).href,
+  description: site.description,
+  ...(site.email ? { email: site.email } : {}),
+  ...(site.whatsapp ? { telephone: `+${site.whatsapp}` } : {}),
+  ...(Object.values(site.social).some(Boolean) ? { sameAs: Object.values(site.social).filter(Boolean) } : {}),
+};
+const webLd = { '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: Astro.site!.href, inLanguage: 'id-ID' };
+
+const highlights = [
+  'Aktivitas disesuaikan dengan tujuan kegiatan',
+  'Informasi paket dan fasilitas dijelaskan sejak awal',
+  'Dokumentasi kegiatan tersedia sebagai referensi',
+  'Tim pendamping dan prosedur kegiatan dijelaskan secara transparan',
+];
+---
+<MarketingLayout
+  title={`Outbound, Team Building, dan Gathering${site.serviceArea ? ` di ${site.serviceArea}` : ''} — ${site.name}`}
+  description={site.description}
+  jsonLd={[orgLd, webLd]}
+>
+  <Hero
+    label="OUTBOUND • TEAM BUILDING • GATHERING"
+    title="Bangun Kebersamaan Lewat Petualangan di Alam Terbuka"
+    description={heroDesc}
+    image="/images/hero/hero-outbound-malang.webp"
+    imageAlt="Kegiatan outbound dan team building di alam terbuka Batu Malang"
+    primary={{ label: 'Lihat Paket Outbound', href: '/paket/' }}
+    secondary="whatsapp"
+    waMessage="Halo, saya ingin berkonsultasi tentang kegiatan outbound."
+  />
+
+  <section class="trust" aria-label="Keunggulan singkat">
+    <div class="container">
+      <ul>
+        {highlights.map((h) => (
+          <li>
+            <div class="trust__icon-wrap"><Icon name="check" /></div>
+            <span>{h}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow="Layanan" title="Kegiatan untuk berbagai tujuan acara" description="Pilih arah kegiatan sesuai kebutuhan, lalu sesuaikan aktivitas bersama tim kami." />
+      <div class="features features--4">
+        <a href="/paket/outbound-team-building/" class="feature">
+          <div class="feature__icon"><Icon name="users" /></div>
+          <h3>Team Building</h3>
+          <p>Melatih komunikasi dan koordinasi lewat permainan kelompok terarah.</p>
+          <div class="feature__foot">
+            <span class="feature__tag">Corporate & Kantor</span>
+            <span class="feature__more">Detail <Icon name="arrow-right" class="feature__arrow" /></span>
+          </div>
+        </a>
+        <a href="/paket/fun-outbound/" class="feature">
+          <div class="feature__icon"><Icon name="flag" /></div>
+          <h3>Fun Outbound</h3>
+          <p>Permainan seru di luar ruang untuk keluarga, komunitas, atau sekolah.</p>
+          <div class="feature__foot">
+            <span class="feature__tag">Keluarga & Komunitas</span>
+            <span class="feature__more">Detail <Icon name="arrow-right" class="feature__arrow" /></span>
+          </div>
+        </a>
+        <a href="/paket/" class="feature">
+          <div class="feature__icon"><Icon name="heart" /></div>
+          <h3>Gathering</h3>
+          <p>Acara berkumpul yang santai untuk mempererat hubungan antaranggota.</p>
+          <div class="feature__foot">
+            <span class="feature__tag">Karyawan & Family</span>
+            <span class="feature__more">Detail <Icon name="arrow-right" class="feature__arrow" /></span>
+          </div>
+        </a>
+        <a href="/wisata/" class="feature">
+          <div class="feature__icon"><Icon name="compass" /></div>
+          <h3>Wisata Alam</h3>
+          <p>Jelajah area alam terbuka dengan fasilitas dan akses yang jelas.</p>
+          <div class="feature__foot">
+            <span class="feature__tag">Eksplorasi Batu-Malang</span>
+            <span class="feature__more">Detail <Icon name="arrow-right" class="feature__arrow" /></span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <SectionHeading eyebrow="Paket" title="Paket outbound pilihan" description="Setiap paket menjelaskan durasi, peserta, fasilitas, dan cara meminta penawaran." href="/paket/" />
+      {paket.length ? (
+        <div class="grid grid--cards">{paket.map((e) => <PackageCard entry={e} />)}</div>
+      ) : (
+        <div class="empty"><h3>Paket segera hadir</h3><p>Daftar paket sedang disiapkan. Hubungi kami untuk konsultasi kebutuhan acara.</p></div>
+      )}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow="Destinasi" title="Lokasi kegiatan dan wisata" description="Kenali area, fasilitas, dan akses sebelum menentukan lokasi acara." href="/wisata/" />
+      {wisata.length ? (
+        <div class="grid grid--cards">{wisata.map((e) => <DestinationCard entry={e} />)}</div>
+      ) : (
+        <div class="empty"><h3>Destinasi segera hadir</h3><p>Informasi lokasi sedang diverifikasi.</p></div>
+      )}
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="container">
+      <SectionHeading eyebrow="Cara pemesanan" title="Dari konsultasi sampai hari kegiatan" description="Alurnya sederhana dan setiap langkah dikonfirmasi bersama Anda." />
+      <ol class="steps">
+        <li><h3>Konsultasi</h3><p>Sampaikan tujuan acara, jumlah peserta, dan perkiraan tanggal.</p></li>
+        <li><h3>Penyesuaian paket</h3><p>Aktivitas dan lokasi disesuaikan dengan kebutuhan peserta.</p></li>
+        <li><h3>Konfirmasi</h3><p>Rincian fasilitas, harga, dan ketentuan disepakati bersama.</p></li>
+        <li><h3>Pelaksanaan</h3><p>Briefing, kegiatan, dan dokumentasi berjalan sesuai kesepakatan.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  {gallery.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <SectionHeading eyebrow="Dokumentasi" title="Cuplikan kegiatan" href="/galeri/" linkLabel="Buka galeri" />
+        <GalleryGrid items={gallery} limit={6} />
+      </div>
+    </section>
+  )}
+
+  {testimonials.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHeading eyebrow="Testimoni" title="Kata peserta dan klien" />
+        <div class="quotes">
+          {testimonials.map((t) => (
+            <figure class="quote"><blockquote><p>{t.quote}</p></blockquote><figcaption><strong>{t.name}</strong>{t.role}</figcaption></figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {blog.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <SectionHeading eyebrow="Blog" title="Artikel terbaru" description="Panduan memilih paket, menyiapkan peserta, dan merencanakan kegiatan." href="/blog/" />
+        <div class="grid grid--cards">{blog.map((e) => <BlogCard entry={e} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow="FAQ" title="Pertanyaan yang sering diajukan" />
+      <FAQList items={faqs} idPrefix="home-faq" />
+    </div>
+  </section>
+
+  <section class="section--tight" style="padding-top:0">
+    <div class="container">
+      <div class="cta-band">
+        <div>
+          <h2>Siap merencanakan kegiatan Anda?</h2>
+          <p>Ceritakan tujuan acara dan jumlah peserta. Kami bantu menyusun pilihan paket yang sesuai.</p>
+        </div>
+        <WhatsAppCTA variant="light" size="lg" message="Halo, saya ingin meminta penawaran kegiatan outbound." label="Konsultasi Sekarang" />
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

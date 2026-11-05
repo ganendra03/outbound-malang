@@ -1,0 +1,44 @@
+---
+import Icon from './Icon.astro';
+import type { GalleryItem } from '../data/gallery';
+interface Props { items: GalleryItem[]; limit?: number }
+const { items, limit } = Astro.props;
+const shown = limit ? items.slice(0, limit) : items;
+---
+<div class="gallery" data-gallery>
+  {shown.map((it, i) => (
+    <figure class="gallery__item" data-filter-item data-category={it.category} data-caption={it.caption}>
+      <button class="gallery__btn" type="button" data-index={i} aria-label={`Perbesar foto: ${it.alt}`}>
+        <img src={it.src} alt={it.alt} width={it.width} height={it.height} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
+      </button>
+    </figure>
+  ))}
+</div>
+<dialog class="lightbox" aria-label="Pratinjau foto" data-lightbox>
+  <div class="lightbox__inner">
+    <button class="lightbox__close" type="button" aria-label="Tutup pratinjau"><Icon name="close" /></button>
+    <img alt="" src="" width="1200" height="800" />
+    <p style="margin:0" data-lb-cap class="lightbox__cap"></p>
+  </div>
+</dialog>
+<script>
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  if (dlg) {
+    const img = dlg.querySelector('img')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-lb-cap]')!;
+    let trigger: HTMLElement | null = null;
+    document.querySelectorAll<HTMLButtonElement>('.gallery__btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const src = btn.querySelector('img')!;
+        img.src = src.currentSrc || src.src;
+        img.alt = src.alt;
+        cap.textContent = btn.closest('figure')?.dataset.caption ?? src.alt;
+        trigger = btn;
+        dlg.showModal();
+      });
+    });
+    dlg.querySelector('.lightbox__close')!.addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', (e) => { if (e.target === dlg || (e.target as HTMLElement).classList.contains('lightbox__inner')) dlg.close(); });
+    dlg.addEventListener('close', () => trigger?.focus());
+  }
+</script>

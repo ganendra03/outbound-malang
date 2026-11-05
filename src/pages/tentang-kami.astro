@@ -1,0 +1,57 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Media from '../components/Media.astro';
+import Icon from '../components/Icon.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import { site } from '../data/site';
+const area = site.serviceArea ? ` ${site.serviceArea}` : '';
+---
+<MarketingLayout title={`Tentang ${site.name} — Penyedia Wisata Outbound${area}`} description={`Kenali ${site.name}, penyedia kegiatan outbound, team building, dan gathering di alam terbuka.`}>
+  <PageHeader
+    title={`Tentang ${site.name}`}
+    lead="Kami membantu perusahaan, sekolah, komunitas, dan keluarga menjalankan kegiatan luar ruang yang terencana dan nyaman."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Tentang Kami' }]}
+    image="/images/hero/hero-tentang-kami.webp"
+    imageAlt="Pemandangan alam pegunungan dan pepohonan asri di Batu Malang"
+  />
+
+  <section class="section">
+    <div class="container" style="display:grid;gap:48px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));align-items:center">
+      <div class="prose">
+        <h2>Profil usaha</h2>
+        <p><strong>{site.name}</strong> adalah penyedia kegiatan outbound, pelatihan <em>team building</em>, dan family gathering profesional yang berpusat di Malang Raya dan Kota Batu, Jawa Timur. Berangkat dari kecintaan pada alam terbuka dan kebutuhan pengembangan sumber daya manusia yang dinamis, kami mendedikasikan diri untuk memberikan pengalaman berkegiatan luar ruang yang aman, inspiratif, dan berdampak nyata bagi kekompakan tim.</p>
+        <p>Sejak didirikan, kami telah mendampingi ratusan instansi perusahaan swasta, BUMN, instansi pemerintahan, lembaga pendidikan, hingga komunitas keluarga dengan skala mulai dari puluhan hingga ratusan peserta dalam berbagai tema kegiatan.</p>
+        <h2>Pendekatan layanan</h2>
+        <p>Kami merancang setiap kegiatan berdasarkan prinsip <em>experiential learning</em> (belajar dari pengalaman langsung). Rangkaian aktivitas dimulai dari konsultasi kebutuhan acara, penyusunan simulasi permainan yang relevan, <em>safety briefing</em> mendalam, hingga sesi <em>debriefing</em> untuk merefleksikan nilai komunikasi, kepemimpinan, dan sinergi kelompok.</p>
+      </div>
+      <Media src="/images/tentang/tim-fasilitator-outbound.webp" alt="Tim fasilitator dan pemandu profesional Outbound Malang" ratio="4-3" width={1200} height={900} />
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="features features--4">
+        <div class="feature"><div class="feature__icon"><Icon name="compass" /></div><h3>Area layanan</h3><p>{site.serviceArea || 'Malang Raya, Kota Batu, Pujon, Kasembon, Coban Rondo, dan sekitarnya'}</p></div>
+        <div class="feature"><div class="feature__icon"><Icon name="shield" /></div><h3>Keselamatan</h3><p>SOP keselamatan ketat, peralatan bersertifikasi standar CE/UIAA, kotak P3K lengkap di lokasi, serta asuransi peserta.</p></div>
+        <div class="feature"><div class="feature__icon"><Icon name="camera" /></div><h3>Dokumentasi</h3><p>Dokumentasi foto dan video berkualitas tinggi di setiap sesi untuk mengabadikan momen kebersamaan dan keceriaan tim.</p></div>
+        <div class="feature"><div class="feature__icon"><Icon name="users" /></div><h3>Tim</h3><p>Fasilitator dan master game berpengalaman yang ramah, komunikatif, dan tersertifikasi kompetensi kepemanduan outbound.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="kontak">
+    <div class="container">
+      <h2>Kontak</h2>
+      <dl class="facts" style="max-width:760px;margin-bottom:28px">
+        {site.serviceArea && <div><dt>Area layanan</dt><dd>{site.serviceArea}</dd></div>}
+        {site.address && <div><dt>Alamat</dt><dd>{site.address}</dd></div>}
+        {site.whatsapp && <div><dt>WhatsApp</dt><dd><a href={`https://wa.me/${site.whatsapp}`} target="_blank" rel="noopener">+{site.whatsapp}</a></dd></div>}
+        {site.email && <div><dt>Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>}
+        {site.hours && <div><dt>Jam layanan</dt><dd>{site.hours}</dd></div>}
+        {!site.whatsapp && !site.email && !site.address && <div><dt>Informasi kontak</dt><dd>Belum dikonfigurasi. Isi di <code>src/data/site.ts</code>.</dd></div>}
+      </dl>
+      <div class="btn-row"><WhatsAppCTA message="Halo, saya ingin berkonsultasi tentang layanan Outbound Malang." /><a class="btn btn--secondary" href="/paket/">Lihat Paket</a></div>
+    </div>
+  </section>
+</MarketingLayout>

@@ -1,0 +1,21 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+---
+<MarketingLayout title="Halaman tidak ditemukan" description="Halaman yang Anda cari tidak tersedia." noindex>
+  <PageHeader
+    title="Halaman Tidak Ditemukan"
+    lead="Alamat yang Anda buka mungkin sudah berpindah atau tidak tersedia. Temukan aktivitas outbound terbaik melalui pilihan paket kami."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: '404' }]}
+    eyebrow="KODE 404"
+    image="/images/hero/hero-404.webp"
+    imageAlt="Pemandangan alam terbuka Batu Malang"
+  />
+  <section class="container notfound" style="padding-block:60px">
+    <p>Silakan jelajahi pilihan paket kegiatan kami atau kembali ke beranda.</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn btn--primary" href="/paket/">Lihat Paket Outbound</a>
+      <a class="btn btn--secondary" href="/">Kembali ke Beranda</a>
+    </div>
+  </section>
+</MarketingLayout>

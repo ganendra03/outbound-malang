@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import Media from '../../components/Media.astro';
+import ListFilter from '../../components/ListFilter.astro';
+import { site } from '../../data/site';
+import { formatDate, sortByDateDesc } from '../../lib/utils';
+const items = sortByDateDesc(await getCollection('blog', ({ data }) => data.published));
+const featured = items.find((i) => i.data.featured) ?? items[0];
+const rest = items.filter((i) => i !== featured);
+const categories = [...new Set(items.map((i) => i.data.category))];
+---
+<MarketingLayout title={`Artikel Outbound, Gathering, dan Wisata Alam — ${site.name}`} description="Panduan memilih paket outbound, menyiapkan peserta, dan merencanakan kegiatan luar ruang.">
+  <PageHeader
+    title="Artikel dan panduan"
+    lead="Jawaban untuk pertanyaan yang sering muncul sebelum dan sesudah memilih paket kegiatan."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Blog' }]}
+    image="/images/hero/hero-blog.webp"
+    imageAlt="Diskusi dan panduan kegiatan outbound di alam terbuka Batu Malang"
+  />
+  <section class="section">
+    <div class="container">
+      {featured ? (
+        <>
+          <article class="featured-post">
+            <Media src={featured.data.cover} alt={featured.data.alt ?? featured.data.title} ratio="16-9" />
+            <div class="featured-post__body">
+              <span class="badge" style="align-self:flex-start">{featured.data.category}</span>
+              <h2><a href={`/blog/${featured.id}/`}>{featured.data.title}</a></h2>
+              <p class="muted" style="margin:0">{featured.data.description}</p>
+              <div class="post-meta"><span>{featured.data.author}</span><time datetime={featured.data.publishedAt.toISOString()}>{formatDate(featured.data.publishedAt)}</time></div>
+            </div>
+          </article>
+          {rest.length > 0 && (
+            <div>
+              {items.length >= 6 && <ListFilter {categories} label="Filter kategori artikel" />}
+              <div class="grid grid--cards">{rest.map((e) => <BlogCard entry={e} />)}</div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div class="empty"><h3>Artikel belum tersedia</h3><p>Artikel pertama sedang disiapkan.</p></div>
+      )}
+    </div>
+  </section>
+</MarketingLayout>

@@ -1,0 +1,58 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import { sortByDateDesc } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const items = await getCollection('blog', ({ data }) => data.published);
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const toc = headings.filter((h) => h.depth === 2);
+const related = sortByDateDesc(await getCollection('blog', ({ data }) => data.published)).filter((p) => p.id !== entry.id).slice(0, 2);
+const paket = (await getCollection('paket', ({ data }) => data.published)).filter((p) => d.relatedPaket.includes(p.id));
+const wisata = (await getCollection('wisata', ({ data }) => data.published)).filter((w) => d.relatedWisata.includes(w.id));
+---
+<ArticleLayout title={d.title} description={d.description} cover={d.cover} alt={d.alt} author={d.author} publishedAt={d.publishedAt} updatedAt={d.updatedAt} category={d.category} readingTime={d.readingTime} slug={entry.id}>
+  {toc.length >= 3 && (
+    <nav class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">Daftar isi</h2>
+      <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+    </nav>
+  )}
+  <div class="prose"><Content /></div>
+
+  {d.sources.length > 0 && (
+    <section class="sources" style="margin-top:40px">
+      <h2 style="font-size:20px">Sumber</h2>
+      <ul>{d.sources.map((s) => <li><a href={s.url} rel="noopener noreferrer" target="_blank">{s.title}</a></li>)}</ul>
+    </section>
+  )}
+
+  {(paket.length > 0 || wisata.length > 0) && (
+    <section style="margin-top:32px">
+      <h2 style="font-size:20px">Terkait dengan artikel ini</h2>
+      <ul>
+        {paket.map((p) => <li>Paket: <a href={`/paket/${p.id}/`}>{p.data.title}</a></li>)}
+        {wisata.map((w) => <li>Destinasi: <a href={`/wisata/${w.id}/`}>{w.data.title}</a></li>)}
+      </ul>
+    </section>
+  )}
+
+  <div class="cta-inline">
+    <h2>Ingin membahas kebutuhan acara Anda?</h2>
+    <p>Ceritakan tujuan dan jumlah peserta, kami bantu mencari opsi yang sesuai.</p>
+    <WhatsAppCTA variant="light" message={`Halo, saya membaca artikel "${d.title}" dan ingin berkonsultasi.`} />
+  </div>
+
+  {related.length > 0 && (
+    <section style="margin-top:56px">
+      <h2 style="font-size:24px">Artikel lainnya</h2>
+      <div class="grid" style="gap:20px">{related.map((e) => <BlogCard entry={e} />)}</div>
+    </section>
+  )}
+</ArticleLayout>

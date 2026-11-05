@@ -1,0 +1,30 @@
+---
+import '@fontsource-variable/manrope';
+import '@fontsource-variable/inter';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/utilities.css';
+import SEOHead from '../components/SEOHead.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: object[];
+}
+const { title, description, ogImage, ogType, noindex, jsonLd = [] } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).href;
+---
+<!doctype html>
+<html lang="id">
+  <head>
+    <SEOHead {title} {description} {canonicalURL} {ogImage} {ogType} {noindex} />
+    {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#konten">Lewati ke konten utama</a>
+    <slot />
+  </body>
+</html>

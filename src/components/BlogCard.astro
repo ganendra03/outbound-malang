@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from './Media.astro';
+import { formatDate } from '../lib/utils';
+interface Props { entry: CollectionEntry<'blog'> }
+const { entry } = Astro.props;
+const d = entry.data;
+---
+<article class="card" data-filter-item data-category={d.category}>
+  <Media src={d.cover} alt={d.alt ?? d.title} ratio="16-9" card />
+  <div class="card__body">
+    <span class="badge" style="align-self:flex-start">{d.category}</span>
+    <h3 class="card__title"><a href={`/blog/${entry.id}/`}>{d.title}</a></h3>
+    <p class="card__text">{d.description}</p>
+    <div class="card__foot">
+      <span class="post-meta"><time datetime={d.publishedAt.toISOString()}>{formatDate(d.publishedAt)}</time>{d.readingTime && <span>{d.readingTime} menit baca</span>}</span>
+      <span class="card__more" aria-hidden="true">Baca Artikel</span>
+    </div>
+  </div>
+</article>

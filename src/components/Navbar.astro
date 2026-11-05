@@ -1,0 +1,215 @@
+---
+import { getCollection } from 'astro:content';
+import { navigation } from '../data/navigation';
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+import WhatsAppCTA from './WhatsAppCTA.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+
+const paketList = (await getCollection('paket', ({ data }) => data.published)).sort(
+  (a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title, 'id')
+);
+---
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="/" aria-label={`${site.name} — Beranda`}>
+      <img src={site.logo} alt="" width="38" height="38" />
+      <span>{site.name}</span>
+    </a>
+    <nav aria-label="Navigasi utama">
+      <ul class="nav__links">
+        {navigation.map((n) => {
+          if (n.href === '/paket/') {
+            const isPaketActive = isActive('/paket/');
+            return (
+              <li class="nav__item nav__item--dropdown">
+                <div class="nav__dropdown-trigger">
+                  <a
+                    href="/paket/"
+                    class="nav__link nav__link--dropdown"
+                    aria-current={isPaketActive ? 'page' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <span>{n.label}</span>
+                    <Icon name="chevron" class="nav__chevron" />
+                  </a>
+                </div>
+                <div class="nav__dropdown-menu" role="menu">
+                  <div class="nav__dropdown-card">
+                    <a href="/paket/" class="nav__dropdown-all" role="menuitem">
+                      <div class="nav__dropdown-all-text">
+                        <span class="nav__dropdown-all-title">Semua Paket Outbound</span>
+                        <span class="nav__dropdown-all-desc">Lihat perbandingan & detail kegiatan</span>
+                      </div>
+                      <span class="nav__dropdown-all-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
+                    {paketList.length > 0 && (
+                      <>
+                        <div class="nav__dropdown-divider" role="separator" />
+                        <div class="nav__dropdown-section-title">Pilihan Paket</div>
+                        <ul class="nav__dropdown-list">
+                          {paketList.map((p) => {
+                            const isCurrent = path === `/paket/${p.id}/` || path === `/paket/${p.id}`;
+                            return (
+                              <li>
+                                <a
+                                  href={`/paket/${p.id}/`}
+                                  class="nav__dropdown-item"
+                                  role="menuitem"
+                                  aria-current={isCurrent ? 'true' : undefined}
+                                >
+                                  <span class="nav__dropdown-item-title">{p.data.title}</span>
+                                  <span class="nav__dropdown-item-meta">
+                                    {p.data.category && <span class="nav__dropdown-item-tag">{p.data.category}</span>}
+                                    {p.data.duration && <span class="nav__dropdown-item-duration">{p.data.duration}</span>}
+                                  </span>
+                                </a>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </li>
+            );
+          }
+          return (
+            <li>
+              <a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+    <WhatsAppCTA class="nav__cta" size="sm" label="Konsultasi" message="Halo, saya ingin berkonsultasi tentang kegiatan outbound." />
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="mobile-drawer" aria-label="Buka menu">
+      <Icon name="menu" class="icon-open" /><Icon name="close" class="icon-close" />
+    </button>
+  </div>
+  <div class="drawer" id="mobile-drawer" hidden>
+    <nav aria-label="Navigasi seluler">
+      <ul class="drawer__links">
+        {navigation.map((n) => {
+          if (n.href === '/paket/') {
+            const isPaketActive = isActive('/paket/');
+            return (
+              <li class="drawer__item drawer__item--dropdown">
+                <div class="drawer__item-row">
+                  <a href="/paket/" class="drawer__link" aria-current={isPaketActive ? 'page' : undefined}>
+                    {n.label}
+                  </a>
+                  <button
+                    type="button"
+                    class="drawer__sub-toggle"
+                    aria-expanded={isPaketActive ? 'true' : 'false'}
+                    aria-label="Buka pilihan paket"
+                  >
+                    <Icon name="chevron" class="drawer__chevron" />
+                  </button>
+                </div>
+                <ul class="drawer__submenu" hidden={!isPaketActive}>
+                  <li>
+                    <a href="/paket/" class="drawer__sublink drawer__sublink--all">
+                      <span>Semua Paket Outbound</span>
+                      <small>Lihat seluruh pilihan kegiatan</small>
+                    </a>
+                  </li>
+                  {paketList.map((p) => {
+                    const isCurrent = path === `/paket/${p.id}/` || path === `/paket/${p.id}`;
+                    return (
+                      <li>
+                        <a href={`/paket/${p.id}/`} class="drawer__sublink" aria-current={isCurrent ? 'page' : undefined}>
+                          <span>{p.data.title}</span>
+                          <small>{p.data.category} • {p.data.duration}</small>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            );
+          }
+          return (
+            <li>
+              <a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+    <WhatsAppCTA size="lg" label="Konsultasi via WhatsApp" message="Halo, saya ingin berkonsultasi tentang kegiatan outbound." />
+  </div>
+</header>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav__toggle');
+  const drawer = document.getElementById('mobile-drawer');
+  if (toggle && drawer) {
+    const setOpen = (open: boolean, restoreFocus = false) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+      drawer.hidden = !open;
+      document.body.classList.toggle('scroll-lock', open);
+      if (!open && restoreFocus) toggle.focus();
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    drawer.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !drawer.hidden) setOpen(false, true);
+      // jaga fokus tetap di dalam drawer + tombol
+      if (e.key === 'Tab' && !drawer.hidden) {
+        const f = [toggle, ...drawer.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')];
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (m) => { if (m.matches) setOpen(false); });
+  }
+
+  // Mobile submenu accordion toggle
+  const subToggle = document.querySelector<HTMLButtonElement>('.drawer__sub-toggle');
+  const subMenu = document.querySelector<HTMLElement>('.drawer__submenu');
+  if (subToggle && subMenu) {
+    subToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const open = subToggle.getAttribute('aria-expanded') !== 'true';
+      subToggle.setAttribute('aria-expanded', String(open));
+      subMenu.hidden = !open;
+    });
+  }
+
+  // Desktop dropdown keyboard & focus handling
+  const dropdownItem = document.querySelector<HTMLElement>('.nav__item--dropdown');
+  const dropdownTrigger = dropdownItem?.querySelector<HTMLAnchorElement>('.nav__link--dropdown');
+  if (dropdownItem && dropdownTrigger) {
+    const setAria = (expanded: boolean) => {
+      dropdownTrigger.setAttribute('aria-expanded', String(expanded));
+    };
+    dropdownItem.addEventListener('mouseenter', () => setAria(true));
+    dropdownItem.addEventListener('mouseleave', () => setAria(false));
+    dropdownTrigger.addEventListener('focus', () => setAria(true));
+    dropdownItem.addEventListener('focusout', (e) => {
+      if (!dropdownItem.contains(e.relatedTarget as Node)) {
+        setAria(false);
+      }
+    });
+    dropdownItem.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        setAria(false);
+        dropdownTrigger.focus();
+      }
+    });
+  }
+</script>

@@ -1,0 +1,21 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  src?: string;
+  alt?: string;
+  ratio?: '16-10' | '4-3' | '16-9';
+  width?: number;
+  height?: number;
+  eager?: boolean;
+  card?: boolean;
+  class?: string;
+}
+const { src, alt = '', ratio = '16-10', width = 1200, height = 750, eager = false, card = false, class: cls = '' } = Astro.props;
+---
+<div class:list={['media', `media--${ratio}`, card && 'media--card', cls]}>
+  {src ? (
+    <img src={src} alt={alt} width={width} height={height} loading={eager ? 'eager' : 'lazy'} decoding="async" fetchpriority={eager ? 'high' : undefined} />
+  ) : (
+    <div class="media__ph" role="img" aria-label={alt || 'Foto akan segera tersedia'}><Icon name="leaf" /></div>
+  )}
+</div>

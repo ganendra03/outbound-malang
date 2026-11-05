@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+interface Props { items: { q: string; a: string }[]; idPrefix?: string }
+const { items, idPrefix = 'faq' } = Astro.props;
+---
+{items.length > 0 && (
+  <div class="faq" data-faq>
+    {items.map((it, i) => (
+      <div class="faq__item">
+        <h3>
+          <button class="faq__btn" type="button" aria-expanded="false" aria-controls={`${idPrefix}-${i}`} id={`${idPrefix}-btn-${i}`}>
+            <span>{it.q}</span><Icon name="chevron" />
+          </button>
+        </h3>
+        <div class="faq__panel" id={`${idPrefix}-${i}`} role="region" aria-labelledby={`${idPrefix}-btn-${i}`} hidden>
+          <p>{it.a}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+<script>
+  document.querySelectorAll<HTMLElement>('[data-faq]').forEach((root) => {
+    root.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.faq__btn');
+      if (!btn) return;
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!open));
+      const panel = document.getElementById(btn.getAttribute('aria-controls')!);
+      if (panel) panel.hidden = open;
+    });
+  });
+</script>

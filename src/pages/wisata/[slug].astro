@@ -1,0 +1,77 @@
+---
+import { getCollection, render } from 'astro:content';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Media from '../../components/Media.astro';
+import FAQList from '../../components/FAQList.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import PackageCard from '../../components/PackageCard.astro';
+import { site } from '../../data/site';
+import { formatDate } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const items = await getCollection('wisata', ({ data }) => data.published);
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const loc = d.location;
+const place = [loc.address, loc.locality, loc.region].filter(Boolean).join(', ');
+const hasCoords = loc.latitude !== null && loc.longitude !== null;
+const mapUrl = hasCoords ? `https://www.google.com/maps/search/?api=1&query=${loc.latitude},${loc.longitude}` : null;
+const paket = (await getCollection('paket', ({ data }) => data.published)).filter((p) => p.data.relatedWisata.includes(entry.id));
+const msg = `Halo, saya ingin bertanya tentang kegiatan di ${d.title}.`;
+---
+<MarketingLayout title={`${d.title} — Aktivitas, Fasilitas, dan Lokasi`} description={d.description} ogImage={d.cover} waMessage={msg}>
+  <PageHeader
+    title={d.title}
+    lead={d.description}
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Wisata', href: '/wisata/' }, { label: d.title }]}
+    eyebrow={d.area}
+    image={d.cover}
+  />
+  <div class="container">
+    <div class="detail" style="padding-top:36px">
+      <div>
+        <section class="content-block prose"><Content /></section>
+
+        {d.activities.length > 0 && (
+          <section class="content-block"><h2>Aktivitas yang tersedia</h2><ul class="checklist">{d.activities.map((s) => <li>{s}</li>)}</ul></section>
+        )}
+        {d.facilities.length > 0 && (
+          <section class="content-block"><h2>Fasilitas</h2><ul class="checklist">{d.facilities.map((s) => <li>{s}</li>)}</ul></section>
+        )}
+
+        <section class="content-block">
+          <h2>Bagaimana cara menuju lokasi?</h2>
+          <p>{d.access ?? 'Petunjuk rute akan ditambahkan setelah diverifikasi. Hubungi kami untuk arahan terbaru.'}</p>
+          {mapUrl && <p><a class="btn btn--secondary btn--sm" href={mapUrl} target="_blank" rel="noopener noreferrer">Buka peta<span class="sr-only"> (tab baru)</span></a></p>}
+        </section>
+
+        {d.faqs.length > 0 && (
+          <section class="content-block"><h2>Pertanyaan tentang lokasi</h2><FAQList items={d.faqs} idPrefix="wisata-faq" /></section>
+        )}
+        {d.updatedDate && <p class="muted" style="font-size:14px">Informasi diperbarui <time datetime={d.updatedDate.toISOString()}>{formatDate(d.updatedDate)}</time>.</p>}
+      </div>
+
+      <aside class="summary" aria-labelledby="info-lokasi">
+        <h2 id="info-lokasi">Info lokasi</h2>
+        <dl>
+          <div><dt>Area</dt><dd>{d.area}</dd></div>
+          {place && <div><dt>Alamat</dt><dd>{place}</dd></div>}
+          <div><dt>Jam operasional / tiket</dt><dd>{d.openingHours ?? 'Hubungi kami untuk informasi terbaru'}</dd></div>
+        </dl>
+        <WhatsAppCTA message={msg} label="Tanya Lokasi Ini" size="lg" />
+      </aside>
+    </div>
+
+    {paket.length > 0 && (
+      <section class="section--tight" style="padding-top:0">
+        <h2>Paket di lokasi ini</h2>
+        <div class="grid grid--cards">{paket.map((e) => <PackageCard entry={e} />)}</div>
+      </section>
+    )}
+  </div>
+</MarketingLayout>

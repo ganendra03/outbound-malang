@@ -1,0 +1,35 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import ListFilter from '../components/ListFilter.astro';
+import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import { gallery } from '../data/gallery';
+import { site } from '../data/site';
+const categories = [...new Set(gallery.map((g) => g.category))];
+---
+<MarketingLayout title={`Galeri Kegiatan Outbound — ${site.name}`} description="Dokumentasi foto kegiatan outbound, team building, dan gathering beserta keterangan aktivitas dan lokasi.">
+  <PageHeader
+    title="Galeri kegiatan"
+    lead="Dokumentasi kegiatan nyata beserta keterangan aktivitas dan lokasinya."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Galeri' }]}
+    image="/images/hero/hero-galeri.webp"
+    imageAlt="Dokumentasi keceriaan kegiatan outbound di alam terbuka Batu Malang"
+  />
+  <section class="section">
+    <div class="container">
+      {gallery.length ? (
+        <div>
+          {gallery.length > 6 && <ListFilter categories={categories} label="Filter kategori galeri" />}
+          <GalleryGrid items={gallery} />
+        </div>
+      ) : (
+        <div class="empty">
+          <h3>Dokumentasi sedang disiapkan</h3>
+          <p>Foto kegiatan akan ditampilkan di sini setelah mendapat izin publikasi. Sementara itu, Anda bisa bertanya langsung tentang dokumentasi kegiatan sebelumnya.</p>
+          <WhatsAppCTA message="Halo, saya ingin melihat dokumentasi kegiatan sebelumnya." label="Tanya Dokumentasi" />
+        </div>
+      )}
+    </div>
+  </section>
+</MarketingLayout>

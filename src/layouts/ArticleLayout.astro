@@ -1,0 +1,55 @@
+---
+import MarketingLayout from './MarketingLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Media from '../components/Media.astro';
+import { site } from '../data/site';
+import { formatDate } from '../lib/utils';
+interface Props {
+  title: string;
+  description: string;
+  cover?: string;
+  alt?: string;
+  author: string;
+  publishedAt: Date;
+  updatedAt?: Date | null;
+  category: string;
+  readingTime?: number;
+  slug: string;
+}
+const { title, description, cover, alt, author, publishedAt, updatedAt, category, readingTime, slug } = Astro.props;
+const url = new URL(`/blog/${slug}/`, Astro.site).href;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: publishedAt.toISOString(),
+  ...(updatedAt ? { dateModified: updatedAt.toISOString() } : {}),
+  author: { '@type': 'Person', name: author },
+  publisher: { '@type': 'Organization', name: site.name },
+  mainEntityOfPage: url,
+  inLanguage: 'id-ID',
+  ...(cover ? { image: new URL(cover, Astro.site).href } : {}),
+};
+---
+<MarketingLayout {title} {description} ogImage={cover} ogType="article" jsonLd={[ld]} waMessage={`Halo, saya membaca artikel "${title}" dan ingin berkonsultasi.`}>
+  <PageHeader
+    title={title}
+    lead={description}
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Blog', href: '/blog/' }, { label: title }]}
+    eyebrow={category}
+    image={cover}
+    showActions={false}
+  />
+  <div class="container">
+    <div class="article__meta" style="margin-top:28px">
+      <span>Oleh <strong>{author}</strong></span>
+      <span>Terbit <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></span>
+      {updatedAt && <span>Diperbarui <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time></span>}
+      {readingTime && <span>{readingTime} menit baca</span>}
+    </div>
+    {cover && <div class="article__cover"><Media src={cover} alt={alt ?? title} ratio="16-9" eager /></div>}
+    <div class="article" style="padding-block:24px 72px"><slot /></div>
+  </div>
+</MarketingLayout>

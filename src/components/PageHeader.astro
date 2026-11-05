@@ -1,0 +1,77 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+import Icon from './Icon.astro';
+import WhatsAppCTA from './WhatsAppCTA.astro';
+
+interface Props {
+  title: string;
+  lead?: string;
+  crumbs: { label: string; href?: string }[];
+  eyebrow?: string;
+  image?: string;
+  imageAlt?: string;
+  showActions?: boolean;
+}
+
+const { title, lead, crumbs, eyebrow, image, imageAlt = '', showActions = true } = Astro.props;
+
+// Auto-derive professional eyebrow tag if not explicitly given
+let autoEyebrow = eyebrow;
+if (!autoEyebrow) {
+  const t = title.toLowerCase();
+  if (t.includes('tentang')) autoEyebrow = 'PROFIL & TENTANG KAMI';
+  else if (t.includes('paket')) autoEyebrow = 'PILIHAN KEGIATAN & GATHERING';
+  else if (t.includes('wisata') || t.includes('destinasi')) autoEyebrow = 'LOKASI & DESTINASI ALAM';
+  else if (t.includes('artikel') || t.includes('panduan') || t.includes('blog')) autoEyebrow = 'PANDUAN & TIPS OUTBOUND';
+  else if (t.includes('galeri')) autoEyebrow = 'DOKUMENTASI KEGIATAN NYATA';
+  else autoEyebrow = 'OUTBOUND MALANG';
+}
+---
+
+<section class="page-header hero-page">
+  <div class="hero-page__bg" aria-hidden="true">
+    {image ? (
+      <img src={image} alt={imageAlt} width="1920" height="460" fetchpriority="high" decoding="async" class="hero-page__img" />
+    ) : (
+      <svg viewBox="0 0 1440 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true" class="hero-page__svg">
+        <rect width="1440" height="460" fill="#173c2a" />
+        <path d="M0 460V260L220 170l240 90 280-140 260 110 220-80 220 70v240Z" fill="#1f5138" />
+        <path d="M0 460V350l260-60 300 70 300-50 280 50 300-45v145Z" fill="#2d6a4f" />
+        <path d="M0 460V395l320-35 340 30 360-35 420 35v70Z" fill="#40916c" opacity=".55" />
+      </svg>
+    )}
+  </div>
+
+  <div class="container hero-page__inner">
+    <div class="hero-page__content">
+      <div class="hero-page__crumbs">
+        <Breadcrumbs items={crumbs} />
+      </div>
+
+      {autoEyebrow && (
+        <div class="hero-page__badge">
+          <Icon name="leaf" size={14} class="hero-page__badge-icon" />
+          <span>{autoEyebrow}</span>
+        </div>
+      )}
+
+      <h1 class="hero-page__title">{title}</h1>
+
+      {lead && <p class="hero-page__lead">{lead}</p>}
+
+      {showActions && (
+        <div class="hero-page__actions">
+          <WhatsAppCTA
+            variant="ghost-light"
+            size="sm"
+            label="Konsultasi Kegiatan"
+            message={`Halo, saya ingin bertanya tentang ${title}.`}
+          />
+          <a href="/paket/" class="btn btn--light btn--sm hero-page__btn-secondary">
+            Lihat Pilihan Paket
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</section>

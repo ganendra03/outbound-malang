@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Media from './Media.astro';
+import Icon from './Icon.astro';
+import { formatRupiah } from '../lib/utils';
+interface Props { entry: CollectionEntry<'paket'> }
+const { entry } = Astro.props;
+const d = entry.data;
+---
+<article class="card" data-filter-item data-category={d.category}>
+  <Media src={d.cover} alt={d.alt ?? d.title} ratio="16-10" card />
+  <div class="card__body">
+    <span class="badge" style="align-self:flex-start">{d.category}</span>
+    <h3 class="card__title"><a href={`/paket/${entry.id}/`}>{d.title}</a></h3>
+    <p class="card__text">{d.description}</p>
+    <ul class="card__meta">
+      <li><Icon name="clock" />{d.duration}</li>
+      <li><Icon name="users" />{d.participantRange}</li>
+      {d.location && <li><Icon name="pin" />{d.location}</li>}
+    </ul>
+    <div class="card__foot">
+      <span class="card__price">{d.priceFrom ? <>Mulai <strong>{formatRupiah(d.priceFrom)}</strong> {d.priceUnit}</> : 'Hubungi kami untuk penawaran'}</span>
+      <span class="card__more" aria-hidden="true">Lihat Detail</span>
+    </div>
+  </div>
+</article>

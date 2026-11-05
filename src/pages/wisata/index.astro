@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import DestinationCard from '../../components/DestinationCard.astro';
+import ListFilter from '../../components/ListFilter.astro';
+import WhatsAppCTA from '../../components/WhatsAppCTA.astro';
+import { site } from '../../data/site';
+const items = (await getCollection('wisata', ({ data }) => data.published)).sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title, 'id'));
+const areas = [...new Set(items.map((i) => i.data.area))];
+const area = site.serviceArea ? ` ${site.serviceArea}` : '';
+---
+<MarketingLayout title={`Destinasi Wisata Outbound${area} — ${site.name}`} description="Kenali lokasi kegiatan outbound dan wisata alam: aktivitas yang tersedia, fasilitas, dan akses menuju lokasi.">
+  <PageHeader
+    title="Destinasi wisata dan lokasi kegiatan"
+    lead="Lihat aktivitas, fasilitas, dan akses di setiap lokasi sebelum menentukan tempat acara."
+    crumbs={[{ label: 'Beranda', href: '/' }, { label: 'Wisata' }]}
+    image="/images/hero/hero-wisata.webp"
+    imageAlt="Pemandangan lanskap padang rumput hijau dan pegunungan Batu Malang"
+  />
+  <section class="section">
+    <div class="container">
+      {items.length ? (
+        <div>
+          {items.length >= 4 && <ListFilter categories={areas} label="Filter area wisata" />}
+          <div class="grid grid--cards">{items.map((e) => <DestinationCard entry={e} />)}</div>
+        </div>
+      ) : (
+        <div class="empty"><h3>Destinasi belum tersedia</h3><p>Informasi lokasi sedang diverifikasi.</p></div>
+      )}
+      <div class="notice" style="margin-top:48px">
+        <p>Ingin mengadakan kegiatan di salah satu lokasi? Tanyakan ketersediaan dan paket yang cocok.</p>
+        <WhatsAppCTA size="sm" message="Halo, saya ingin bertanya tentang kegiatan di salah satu lokasi wisata Anda." />
+      </div>
+    </div>
+  </section>
+</MarketingLayout>

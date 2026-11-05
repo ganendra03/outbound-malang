@@ -1,0 +1,28 @@
+---
+import Icon from './Icon.astro';
+import { site, hasWhatsApp } from '../data/site';
+import { waLink } from '../lib/utils';
+interface Props {
+  message?: string;
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'light' | 'ghost-light';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+const { message = 'Halo, saya ingin bertanya tentang kegiatan outbound.', label = 'Konsultasi via WhatsApp', variant = 'primary', size = 'md', class: cls = '' } = Astro.props;
+const wa = waLink(message);
+// Fallback jika WhatsApp belum dikonfigurasi: email (jika ada) atau halaman kontak
+const href = wa ?? (site.email ? `mailto:${site.email}?subject=${encodeURIComponent('Konsultasi kegiatan')}&body=${encodeURIComponent(message)}` : '/tentang-kami/#kontak');
+const isExternal = hasWhatsApp;
+const text = hasWhatsApp ? label : site.email ? 'Konsultasi via Email' : 'Hubungi Kami';
+---
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`, size === 'lg' && 'btn--lg', size === 'sm' && 'btn--sm', cls]}
+  {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+  data-cta="whatsapp"
+>
+  {hasWhatsApp && <Icon name="whatsapp" />}
+  {text}
+  {isExternal && <span class="sr-only"> (membuka WhatsApp di tab baru)</span>}
+</a>
