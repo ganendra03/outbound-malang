@@ -2,7 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import WhatsAppCTA from '../components/WhatsAppCTA.astro';
+import FloatingActions from '../components/FloatingActions.astro';
 interface Props {
   title: string;
   description: string;
@@ -18,5 +18,5 @@ const { waMessage, ...seo } = Astro.props;
   <Navbar />
   <main id="konten" tabindex="-1"><slot /></main>
   <Footer />
-  <WhatsAppCTA class="wa-float" size="md" label="WhatsApp" message={waMessage ?? 'Halo, saya ingin bertanya tentang kegiatan outbound.'} />
+  <FloatingActions waMessage={waMessage} />
 </BaseLayout>
