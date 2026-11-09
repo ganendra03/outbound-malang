@@ -16,6 +16,9 @@ const place = [d.location.locality, d.location.region].filter(Boolean).join(', '
     {d.activities.length > 0 && (
       <ul class="tags">{d.activities.slice(0, 3).map((a) => <li>{a}</li>)}</ul>
     )}
-    <div class="card__foot"><span class="card__more" aria-hidden="true">Jelajahi Wisata</span></div>
+    <div class="card__foot">
+      <span class="card__price">{d.area}</span>
+      <span class="card__more" aria-hidden="true">Jelajahi Wisata</span>
+    </div>
   </div>
 </article>

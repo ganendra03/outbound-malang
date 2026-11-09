@@ -1,5 +1,6 @@
 ---
-import { hasWhatsApp } from '../data/site';
+import Icon from './Icon.astro';
+import WhatsAppCTA from './WhatsAppCTA.astro';
 interface Props {
   label?: string;
   title: string;
@@ -10,9 +11,7 @@ interface Props {
   secondary?: { label: string; href: string } | 'whatsapp';
   waMessage?: string;
 }
-const { label, title, description, image, imageAlt = '', primary } = Astro.props;
-import WhatsAppCTA from './WhatsAppCTA.astro';
-const { secondary, waMessage } = Astro.props;
+const { label, title, description, image, imageAlt = '', primary, secondary, waMessage } = Astro.props;
 ---
 <section class="hero">
   <div class="hero__bg" aria-hidden={imageAlt ? undefined : 'true'}>
@@ -29,11 +28,19 @@ const { secondary, waMessage } = Astro.props;
   </div>
   <div class="container hero__inner">
     <div class="hero__content">
-      {label && <span class="hero__label">{label}</span>}
+      {label && (
+        <div class="hero__badge">
+          <Icon name="leaf" size={14} class="hero__badge-icon" />
+          <span>{label}</span>
+        </div>
+      )}
       <h1>{title}</h1>
       <p class="hero__desc">{description}</p>
       <div class="btn-row btn-row--stack">
-        <a class="btn btn--primary btn--lg" href={primary.href} style="background:#fff;color:var(--color-forest-900)">{primary.label}</a>
+        <a class="btn btn--light btn--lg" href={primary.href}>
+          <span>{primary.label}</span>
+          <Icon name="arrow-right" />
+        </a>
         {secondary === 'whatsapp' ? (
           <WhatsAppCTA variant="ghost-light" size="lg" label="Konsultasi Kegiatan" message={waMessage ?? 'Halo, saya ingin berkonsultasi tentang kegiatan outbound.'} />
         ) : secondary ? (

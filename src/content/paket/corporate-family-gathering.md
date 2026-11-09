@@ -6,6 +6,7 @@ alt: "Keceriaan acara corporate family gathering perusahaan di alam terbuka Batu
 category: "Family Gathering"
 duration: "1 hari / 2D1N"
 participantRange: "Mulai dari 30 hingga 500+ peserta"
+location: "Kota Batu & Songgoriti"
 priceFrom: null
 suitableFor:
   - "Perusahaan atau instansi yang mengadakan gathering tahunan atau HUT kantor"

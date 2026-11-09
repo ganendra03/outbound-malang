@@ -10,6 +10,10 @@ const shown = limit ? items.slice(0, limit) : items;
     <figure class="gallery__item" data-filter-item data-category={it.category} data-caption={it.caption}>
       <button class="gallery__btn" type="button" data-index={i} aria-label={`Perbesar foto: ${it.alt}`}>
         <img src={it.src} alt={it.alt} width={it.width} height={it.height} loading={i < 3 ? 'eager' : 'lazy'} decoding="async" />
+        <span class="gallery__overlay">
+          <span class="gallery__tag">{it.category}</span>
+          <span class="gallery__title">{it.caption}</span>
+        </span>
       </button>
     </figure>
   ))}
